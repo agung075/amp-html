@@ -1,4 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Random Post</title>
+<meta content='width=device-width, initial-scale=1' name='viewport'>
+<link href='https://fonts.googleapis.com/css?family=Roboto:100,200,300,400italic,400,500,500italic,700,700italic,900%7CMaterial+Icons' rel='stylesheet' type='text/css'/>
 <style>
+body {background-color:white;margin:0;padding:0;color:#212121;}
+a {color:#212121;text-decoration:none;}
+a:hover {color:#0379C4}
 .random-post {margin-top:10px;overflow:hidden}
 .random-post h2 {padding-bottom:15px;font-size:20px;font-weight:300;color:#666;}
 .random-post ul {padding:5px 0;}
@@ -27,7 +37,9 @@
     .random-post .item-thumbnail {display:none;}
 }
 </style>
-<div class='random-post' id='random-post'/>
+</head>
+<body>
+<div class='random-post' id='random-post'></div>
 <script>
 function getQueryVariable(variable) {
   var query = window.location.search.substring(1);
@@ -210,3 +222,6 @@ var randomPost;
   loadScript(config.homePage.replace(/\/$/, "") + "/feeds/posts/summary" + failureMessage + "?alt=json-in-script&orderby=updated&max-results=0&callback=randomPostStartIndex");
 })(window, document, document.getElementsByTagName("head")[0]);
 </script>
+
+</body>
+</html>
