@@ -1,0 +1,212 @@
+<style>
+.random-post {margin-top:10px;overflow:hidden}
+.random-post h2 {padding-bottom:15px;font-size:20px;font-weight:300;color:#666;}
+.random-post ul {padding:5px 0;}
+.random-post li {display:inline-block;width:33.80%;margin-bottom:10px;padding-right:10px;;vertical-align:top;overflow:hidden}
+.random-post li:nth-of-type(3n+3) {width:32.40%;padding-right:0}
+.random-post li:nth-of-type(n+4) {display:none;}
+.random-post .item-thumbnail {display:block}
+.random-post .item-thumbnail:hover img {opacity:0.8;transition:opacity 0.6s ease-in-out;}
+.random-post .item-title {margin:6px 0 0;font-size:15px;font-weight:500;line-height:1.4em;}
+.random-post .item-title a {color:#888;overflow:hidden;text-overflow:ellipsis;-webkit-box-orient:vertical;-webkit-line-clamp:2;display:-webkit-box;max-height:40px;}
+.random-post .item-title a:hover {color:#0379C4;}
+@media only screen and (max-width:460px) {
+    .random-post {margin-top:20px;}
+    .random-post h2 {border-bottom:2px solid #f0f0f0;}
+    .random-post ul {padding:10px 0;}
+    .random-post li {display:block;width:100%;margin-bottom:10px;padding:0 0 10px;border-bottom:1px solid #f5f5f5;}
+    .random-post li:nth-of-type(3n+3) {width:100%;}
+    .random-post li:nth-of-type(n+4) {display:block;}
+    .random-post .item-thumbnail {float:right;margin-left:10px;}
+    .random-post .item-thumbnail img {width:92px;height:auto}
+    .random-post .item-title {font-weight:400;}
+    .random-post .item-title a {color:#666;display:block;text-overflow:initial;-webkit-line-clamp:3;max-height:100%;}
+}
+@media only screen and (max-width:300px) {
+    .random-post h2 {font-size:16px;}
+    .random-post .item-thumbnail {display:none;}
+}
+</style>
+<div class='random-post' id='random-post'/>
+<script>
+function getQueryVariable(variable) {
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+    if(pair[0] == variable){return pair[1];}
+  }
+  return(false);
+}
+var randomPostConfig = {
+      homePage : getQueryVariable("url"),
+      containerID : "random-post",
+      widgetTitle : "You Might Also Like",
+      numPost : 5,
+      displayThumb : true,
+      displayInfo : false,
+      displaySummary : false,
+      displaySummaryMoreText : false,
+      thumbnailWidth : 214,
+      thumbnailHeight : 130,
+      summaryLenght : 98,
+      summaryMoreText : "Read More",
+      linkNewTab : true,
+      noImage : "//3.bp.blogspot.com/-YusMRG2EPXQ/V5Lv4auS5cI/AAAAAAAAAPQ/qfPoWz_HoQ48fPY6KdR-XA1eSqqhWFGTgCLcB/s1600/no_thumb.jpg"
+    };
+var randomPostStartIndex;
+var randomPost;
+(function(window, document, id) {
+  var config = {
+      homePage : "http://tests-it.blogspot.com",
+      containerID : "random-post",
+      widgetTitle : "Random Post:",
+      numPost : 5,
+      displayThumb : true,
+      displayInfo : false,
+      displaySummary : 1,
+      displaySummaryMoreText : false,
+      thumbnailWidth : 72,
+      thumbnailHeight : 54,
+      summaryLenght : 98,
+      summaryMoreText : "Read More",
+      linkNewTab : true,
+      noImage : "//3.bp.blogspot.com/-YusMRG2EPXQ/V5Lv4auS5cI/AAAAAAAAAPQ/qfPoWz_HoQ48fPY6KdR-XA1eSqqhWFGTgCLcB/s1600/no_thumb.jpg"
+  };
+  var key;
+  for (var key in randomPostConfig) {
+    config[key] = randomPostConfig[key] == "undefined" ? config[key] : randomPostConfig[key];
+  }
+
+  var labelArray = [];
+  var failureMessage = typeof labelArray == "object" && labelArray.length > 0 ? "/-/" + shuffleItems(labelArray)[0] : "";
+  var getRandomInt = function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+  var shuffleItems = function(items) {
+    var i = items.length;
+    var j;
+    var item;
+    if (i === 0) {
+      return false;
+    }
+    for (;--i;) {
+      j = Math.floor(Math.random() * (i + 1));
+      item = items[i];
+      items[i] = items[j];
+      items[j] = item;
+    }
+    return items;
+  };
+  var loadScript = function(path) {
+    var el = document.createElement("script");
+    el.type = "text/javascript";
+    el.src = path;
+    id.appendChild(el);
+  };
+  var createRandomPostStartIndex = function(data) {
+    var calculate = data.feed.openSearch$totalResults.$t - config.numPost;
+    var startIndex = getRandomInt(1, calculate > 0 ? calculate : 1);
+    loadScript(config.homePage.replace(/\/$/, "") + "/feeds/posts/summary" + failureMessage + "?alt=json-in-script&orderby=updated&start-index=" + startIndex + "&max-results=" + config.numPost + "&callback=randomPost");
+  };
+  var getRandomPost = function(data) {
+    var containerID = document.getElementById(config.containerID);
+    var elements = "<h2>" + config.widgetTitle + "</h2>";
+    var items = shuffleItems(data.feed.entry);
+    var i = 0;
+    elements += "<ul>";
+    for (; i < config.numPost; i++) {
+      var entry = items[i];
+      var itemTitle = entry.title.$t;
+      var itemUrl;
+      var itemImage;
+      var itemLabel = [];
+      var itemDate;
+      var itemComment;
+      var itemCommentUrl;
+      var itemSummary;
+      if (i == entry.length) {
+        break;
+      };
+      var j = 0;
+      for (; j < entry.link.length; j++) {
+        if ("replies" == entry.link[j].rel && "text/html" == entry.link[j].type) {
+            itemComment = entry.link[j].title;
+            itemCommentUrl = entry.link[j].href;
+        };
+        if ("alternate" == entry.link[j].rel) {
+            itemUrl = entry.link[j].href;
+            break;
+        };
+      };
+
+      if ("media$thumbnail" in entry) {
+          itemImage = entry.media$thumbnail.url.replace("/s72-c/", "/w" + config.thumbnailWidth + "-h" + config.thumbnailHeight + "-c/");
+      } else {
+          itemImage = config.noImage.replace("/s1600/", "/w" + config.thumbnailWidth + "-h" + config.thumbnailHeight + "-c/");
+      }
+
+      for (var n = 0; n < entry.category.length; n++){
+        itemLabel.push(entry.category[n].term);
+      }
+
+      var date = entry.published.$t;
+      var year = date.substring(0, 4);
+      var digit = date.substring(5, 7);
+      var day = date.substring(8, 10);
+      var month = new Array;
+      month[1] = "January";month[2] = "February";month[3] = "March";month[4] = "April";month[5] = "May";month[6] = "June";
+      month[7] = "July";month[8] = "August";month[9] = "September";month[10] = "October";month[11] = "November";month[12] = "December";
+      itemDate = month[parseInt(digit)] + " "+ day + ", " +year;
+
+      var path = "";
+      if ("content" in entry) {
+          path = entry.content.$t
+      } else {
+        if ("summary" in entry) {
+          path = entry.summary.$t
+        }
+      }
+      var r20 = /<\S[^>]*>/g;
+      if (path = path.replace(r20, "")) {
+        if (path.length < config.summaryLenght) {
+            itemSummary = path;
+        } else {             
+          path = path.substring(0, config.summaryLenght);
+          var paramPath = path.lastIndexOf(" ");
+          path = path.substring(0, paramPath);
+          itemSummary = path;
+        };
+      };
+
+      var newtab = config.linkNewTab ? "target='_blank'" : "";
+      elements += "<li>";
+      if (config.displayThumb) {
+          elements +="<div class='item-thumbnail'>";
+          elements += "<a href='" + itemUrl + "'" + newtab + "title='" + itemTitle + "'>";
+          elements += "<img src='" + itemImage + "' alt='" + itemTitle + "' title='" + itemTitle + "'/>";
+          elements += "</a>";
+          elements += "</div>";
+      }
+      elements += "<div class='item-title'>";
+      elements += "<a href='" + itemUrl + "'" + newtab + "title='" + itemTitle + "'>" + itemTitle + "</a>";
+      elements += "</div>";
+      if (config.displayInfo) {
+          elements += "<div class='item-info'>";
+          elements += "<span class='item-info-date'>" + itemDate + "</span><span class='item-info-label'>" + itemLabel[0] + "</span>";
+          elements += "</div>";
+      }
+      if (config.displaySummary) {
+          var moretext = config.displaySummaryMoreText ? "<a class='item-snippet-more' href='" + itemUrl + "' " + newtab + ">" + config.summaryMoreText + "</a>" : "";
+          elements += "<div class='item-snippet'>" + itemSummary + "... " + moretext + "</div>";
+      }
+      elements += "</li>";
+    };
+    elements += "</ul>";
+    containerID.innerHTML = elements;
+  };
+  randomPostStartIndex = createRandomPostStartIndex;
+  randomPost = getRandomPost;
+  loadScript(config.homePage.replace(/\/$/, "") + "/feeds/posts/summary" + failureMessage + "?alt=json-in-script&orderby=updated&max-results=0&callback=randomPostStartIndex");
+})(window, document, document.getElementsByTagName("head")[0]);
+</script>
